@@ -22,7 +22,8 @@ void place(const int& entry, const int& index_id, const int& count) {
     if (hash_table[entries[entry][index_id]] != INT_MIN) {
         int displaced = hash_table[entries[entry][index_id]];
         hash_table[entries[entry][index_id]] = entry;
-        place(displaced, (index_id + 1) % 2, count + 1);
+        int dis_index_id = (entries[entry][index_id] == entries[displaced][0]) ? 1 : 0;
+        place(displaced, dis_index_id, count + 1);
     }
     else {
         hash_table[entries[entry][index_id]] = entry;
