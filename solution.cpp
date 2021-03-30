@@ -19,7 +19,6 @@ void place(const int& entry, const int& index_id, const int& count) {
         passed = false;
         return;
     }
-    //cout << entry << "|" << index_id << "|" << count << endl;
     if (hash_table[entries[entry][index_id]] != INT_MIN) {
         int displaced = hash_table[entries[entry][index_id]];
         hash_table[entries[entry][index_id]] = entry;
@@ -55,10 +54,14 @@ int main(int argc, char* argv[]) {
     hash_table = new int[n];
     for (int i = 0; i < n; i++)
         hash_table[i] = INT_MIN;
-
     passed = true;
-    for (int i = 0; i < m && getline(ifs, input); i++) {
-        if (input.size() <= 0 && i--) continue;
+
+    for (int i = 0; i < m; i++) {
+        getline(ifs, input);
+        if (input.size() <= 0) {
+            i--;
+            continue;
+        }
         strs.clear();
         strs << input;
         getline(strs, parsed_input, ' ');
