@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <climits>
 #include "ArgumentManager.h"
 #include "BSTree.h"
@@ -35,14 +36,17 @@ int main(int argc, char* argv[]) {
     std::ifstream ifs(am.get("input"));
     std::ofstream ofs(am.get("output"));
 
-
     int m;
     string input;
-    getline(ifs, input, ' ');
-    m = std::stoi(input);
-    getline(ifs, input, '\n');
-    n = std::stoi(input);
-    //cout << "SIZE:" << n << endl;
+    string parsed_input;
+    std::stringstream strs;
+    while (getline(ifs, input) && input.size() <= 0);
+    strs.clear();
+    strs << input;
+    getline(strs, parsed_input, ' ');
+    m = std::stoi(parsed_input);
+    getline(strs, parsed_input, '\n');
+    n = std::stoi(parsed_input);
 
     entries = new int*[m];
     for (int i = 0; i < m; i++)
@@ -53,20 +57,17 @@ int main(int argc, char* argv[]) {
         hash_table[i] = INT_MIN;
 
     passed = true;
-    for (int i = 0; i < m; i++) {
-        //cout << "ENTRY:" << i << endl;
-        getline(ifs, input, ' ');
-        int index1 = std::stoi(input);
+    for (int i = 0; i < m && getline(ifs, input); i++) {
+        if (input.size() <= 0 && i--) continue;
+        strs.clear();
+        strs << input;
+        getline(strs, parsed_input, ' ');
+        int index1 = std::stoi(parsed_input);
         entries[i][0] = index1;
-        getline(ifs, input, '\n');
-        int index2 = std::stoi(input);
+        getline(strs, parsed_input, '\n');
+        int index2 = std::stoi(parsed_input);
         entries[i][1] = index2;
-        //cout << "indices:" << entries[i][0] << "|" << entries[i][1] << endl;
         place(i, 0, 0);
-        //cout << "TABLE:";
-        // for (int i = 0; i < n; i++)
-        //     cout << hash_table[i] <<  " ";
-        // cout << endl;
         if (!passed) {
             ofs << "Failed";
             return 0;
@@ -78,22 +79,36 @@ int main(int argc, char* argv[]) {
     while (getline(ifs, input) && input.size() <= 0);
     int k;
     k = std::stoi(input);
+    if (k <= 0) {
+        delete [] entries;
+        delete hash_table;
+        return 0;
+    }
 
     BSTree* tree = new BSTree();
-    while (k-- && getline(ifs, input)) {
+    while (k && getline(ifs, input)) {
+        if (input.size() <= 0) continue;
         int employee = std::stoi(input);
         tree->addNode(employee);
+        k--;
     }
-    //cout << "size:" << tree->size() << endl;
+
+    // Ignore blank lines
+    while (getline(ifs, input) && input.size() <= 0);
+    strs.clear();
+    strs << input;
     int start, end;
-    getline(ifs, input, ' ');
-    end = std::stoi(input);
-    getline(ifs, input, '\n');
-    start = std::stoi(input);
+    getline(strs, parsed_input, ' ');
+    end = std::stoi(parsed_input);
+    getline(strs, parsed_input, '\n');
+    start = std::stoi(parsed_input);
     ofs << "Looking for: " << end << "\n";
     ofs << "Starting from: " << start << "\n";
-    ofs << tree->track(tree->find(start), end) << "\n";
-    tree->traverseAndPrint(tree->find(start), tree->find(end), ofs);
+    BSTree::Node* start_p = tree->find(start);
+    if (tree->find(start) == nullptr)
+        start_p = tree->getRoot();
+    ofs << tree->track(start_p, end) << "\n";
+    tree->traverseAndPrint(start_p, tree->find(end), ofs);
 
     ofs.flush();
     ofs.close();
@@ -102,6 +117,5 @@ int main(int argc, char* argv[]) {
     delete [] entries;
     delete hash_table;
     delete tree;
-
     return 0;
 }
