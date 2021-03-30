@@ -4,7 +4,7 @@
 #include <fstream>
 
 class BSTree {
-    private:
+    public:
         struct Node {
             Node(int val) : left(nullptr), right(nullptr), val(val) { }
             Node* left;
@@ -17,6 +17,7 @@ class BSTree {
         ~BSTree();
         void addNode(const int& e);
         Node* find(const int& e) const;
+        Node* getRoot() const;
         void deleteTree(Node* p);
         bool empty() const;
         int size() const;
@@ -98,6 +99,8 @@ BSTree::Node* BSTree::find(Node* p, const int& e) const {
         return nullptr;
     }
 }
+
+BSTree::Node* BSTree::getRoot() const { return root; }
 
 int BSTree::size() const { return n; }
 
